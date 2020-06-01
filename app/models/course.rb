@@ -29,7 +29,6 @@ class Course < ApplicationRecord
   enum access_level: { everyone: 0, authenticated_users: 1 }
   # Attributes not saved to db, but still needed for validation
   attr_accessor :other_topic, :org_id, :subdomain
-  attr_writer :propagation_org_ids
 
   belongs_to :parent, class_name: 'Course', optional: true
   # has_one :assessment
@@ -74,10 +73,6 @@ class Course < ApplicationRecord
 
   before_save :find_or_create_category
 
-  def propagation_org_ids
-    @propagation_org_ids ||= []
-  end
-
   def topics_list(topic_list)
     if topic_list.present?
       valid_topics = topic_list.reject(&:blank?)
@@ -93,15 +88,15 @@ class Course < ApplicationRecord
   end
 
   def lesson_after(lesson = nil)
-    raise StandardError, 'There are no available lessons for this course.' if lessons.published.count.zero?
+    raise StandardError, 'There are no available lessons for this course.' if lessons.count.zero?
 
     begin
       lesson_order = lesson.lesson_order
-      return lessons.published.last if lesson_order >= last_lesson_order
+      return lessons.last if lesson_order >= last_lesson_order
 
-      lessons.published.find_by('lesson_order > ?', lesson_order)
+      lessons.find_by('lesson_order > ?', lesson_order)
     rescue StandardError
-      lessons.published.first
+      lessons.first
     end
   end
 
@@ -113,7 +108,7 @@ class Course < ApplicationRecord
 
   def duration(format = 'mins')
     total = 0
-    lessons.published.each { |l| total += l.duration }
+    lessons.each { |l| total += l.duration }
     Duration.minutes_str(total, format)
   end
 
@@ -127,19 +122,12 @@ class Course < ApplicationRecord
                     end
   end
 
-  def update_lesson_pub_stats(new_pub_status)
-    lessons.each do |l|
-      l.pub_status = new_pub_status
-      l.save
-    end
+  def additional_resource_attachments
+    self.attachments.where(doc_type: 'additional-resource')
   end
 
-  def post_course_attachments
-    self.attachments.where(doc_type: 'post-course')
-  end
-
-  def supplemental_attachments
-    self.attachments.where(doc_type: 'supplemental')
+  def text_copy_attachments
+    (parent || self).attachments.where(doc_type: 'text-copy')
   end
 
   def published?

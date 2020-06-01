@@ -17,27 +17,27 @@
     "course_level access_level"
     "seo_title seo_title"
     "seo_meta seo_meta"
-    "propagation propagation"
+    "pub_status ."
     "actions actions";
 
   &.restricted {
     grid-template-areas:
       "errors errors"
       "categories access_level"
+      "resources resources"
+      "additional_content additional_content"
+      "pub_status ."
       "actions actions"
       "title title"
       "author author"
       "summary summary"
       "description description"
       "text_copies text_copies"
-      "resources resources"
-      "additional_content additional_content"
       "topics ."
       "language format"
-      "course_level pub_status"
+      "course_level ."
       "seo_title seo_title"
-      "seo_meta seo_meta"
-      "propagation propagation";
+      "seo_meta seo_meta";
   }
 
   .error_explanation {
@@ -116,12 +116,25 @@
     grid-area: seo_meta;
   }
 
+  .pub-status {
+    grid-area: pub_status;
+  }
+
   .propagation {
     grid-area: propagation;
   }
 
   .actions {
     grid-area: actions;
+  }
+
+  .imported-course-actions {
+    border-bottom: 1px solid $grey;
+
+    p {
+      margin-block-start: 2em;
+      margin-block-end: 0;
+    }
   }
 }
 
