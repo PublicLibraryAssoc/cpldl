@@ -1,0 +1,37 @@
+version: "3.8"
+services:
+  db:
+    image: postgres:11
+    environment:
+      POSTGRES_PASSWORD: password
+    volumes:
+      - ../tmp/db:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+  redis:
+    image: redis:5.0
+  web:
+    build: ../
+    command: bash -c "bundle exec rails s -p 3000 -b '0.0.0.0'"
+    environment:
+      DB_USERNAME: postgres
+      DB_PASSWORD: password
+      DB_NAME: cpldl_db
+      DB_HOST: db
+      DB_PORT: 5432
+      RAILS_ENV: development
+      RAILS_MAX_THREADS: 5
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    volumes:
+      - ../:/rails-app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+      - redis
+
+volumes:
+  db:
+  bundle:
+  redis:
