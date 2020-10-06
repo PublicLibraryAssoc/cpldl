@@ -1,7 +1,7 @@
-resource "aws_security_group" "database" {
+resource "aws_security_group" "db_security_group" {
   name        = "digitallearn-db-sg-${var.environment_name}"
   description = "Database security group within ${var.environment_name} VPC"
-  vpc_id      = aws_vpc.vpc.id
+  vpc_id      = var.vpc_id
 
   ingress {
     from_port = 5432

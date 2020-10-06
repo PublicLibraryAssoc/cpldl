@@ -64,3 +64,6 @@ config/secrets.yml
 
 # Ops environment variables
 /ops/*/.env
+
+# Terraform cache files
+/ops/*/.terraform/*
